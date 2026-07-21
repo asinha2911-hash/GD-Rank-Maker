@@ -1,9 +1,12 @@
 "use client"
 
-import type { BannerConfig } from "@/lib/banner-config"
+import type { BannerConfig, OrnamentType, PresetName } from "@/lib/banner-config"
+import { PRESETS, PRESET_ORDER } from "@/lib/banner-config"
 
 type Props = {
   config: BannerConfig
+  activePreset: PresetName | null
+  onSelectPreset: (name: PresetName) => void
   onChange: (patch: Partial<BannerConfig>) => void
   onReset: () => void
 }
@@ -98,7 +101,30 @@ const FONTS = [
   { label: "Impact", value: "Impact, sans-serif" },
 ]
 
-export function BannerControls({ config, onChange, onReset }: Props) {
+const ORNAMENTS: { label: string; value: OrnamentType }[] = [
+  { label: "None", value: "none" },
+  { label: "Frame", value: "frame" },
+  { label: "Gold ingots", value: "ingots" },
+  { label: "Crescent moons", value: "moons" },
+  { label: "Aurora orbs", value: "orbs" },
+]
+
+/** A small swatch that previews the chrome gradient of a preset. */
+function PresetSwatch({ name }: { name: PresetName }) {
+  const p = PRESETS[name]
+  return (
+    <span
+      aria-hidden="true"
+      className="h-4 w-4 shrink-0 rounded-full border border-white/20"
+      style={{
+        background: `linear-gradient(180deg, ${p.chromeTop}, ${p.chromeHorizon} 50%, ${p.chromeBottom})`,
+        boxShadow: `0 0 6px ${p.glowColor}`,
+      }}
+    />
+  )
+}
+
+export function BannerControls({ config, activePreset, onSelectPreset, onChange, onReset }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -113,6 +139,33 @@ export function BannerControls({ config, onChange, onReset }: Props) {
           Reset
         </button>
       </div>
+
+      <Section title="Tier Presets">
+        <div className="grid grid-cols-2 gap-2">
+          {PRESET_ORDER.map((name) => {
+            const active = activePreset === name
+            return (
+              <button
+                key={name}
+                type="button"
+                onClick={() => onSelectPreset(name)}
+                className={`flex items-center gap-2 rounded-md border px-2.5 py-2 text-left text-xs font-medium transition-colors ${
+                  active
+                    ? "border-primary bg-primary/15 text-foreground"
+                    : "border-border bg-card/40 text-foreground/80 hover:bg-muted"
+                }`}
+              >
+                <PresetSwatch name={name} />
+                <span className="truncate">{name}</span>
+              </button>
+            )
+          })}
+        </div>
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          Pick a tier to load its full look, then tweak anything below. Change the word to
+          apply any tier&apos;s style to your own text.
+        </p>
+      </Section>
 
       <Section title="Content">
         <Row label="Word">
@@ -194,7 +247,44 @@ export function BannerControls({ config, onChange, onReset }: Props) {
         </Row>
       </Section>
 
-      <Section title="Sparkles & Space">
+      <Section title="Background Plate">
+        <Row label="Center glow">
+          <ColorField value={config.bgInner} onChange={(v) => onChange({ bgInner: v })} />
+        </Row>
+        <Row label="Edge color">
+          <ColorField value={config.bgOuter} onChange={(v) => onChange({ bgOuter: v })} />
+        </Row>
+        <Row label="Accent tint">
+          <ColorField value={config.bgAccent} onChange={(v) => onChange({ bgAccent: v })} />
+        </Row>
+        <Row label="Nebula overlay">
+          <Toggle value={config.showNebula} onChange={(v) => onChange({ showNebula: v })} />
+        </Row>
+        <Row label="Vignette">
+          <Slider value={config.vignette} min={0} max={1} step={0.05} onChange={(v) => onChange({ vignette: v })} />
+        </Row>
+      </Section>
+
+      <Section title="Ornaments">
+        <Row label="Side pieces">
+          <select
+            value={config.ornament}
+            onChange={(e) => onChange({ ornament: e.target.value as OrnamentType })}
+            className="w-40 rounded border border-border bg-input px-2 py-1 text-sm text-foreground"
+          >
+            {ORNAMENTS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </Row>
+        <Row label="Ornament color">
+          <ColorField value={config.ornamentColor} onChange={(v) => onChange({ ornamentColor: v })} />
+        </Row>
+      </Section>
+
+      <Section title="Sparkles & Stars">
         <Row label="Show sparkles">
           <Toggle value={config.showSparkles} onChange={(v) => onChange({ showSparkles: v })} />
         </Row>
@@ -204,8 +294,11 @@ export function BannerControls({ config, onChange, onReset }: Props) {
         <Row label="Sparkle color">
           <ColorField value={config.sparkleColor} onChange={(v) => onChange({ sparkleColor: v })} />
         </Row>
-        <Row label="Vignette">
-          <Slider value={config.vignette} min={0} max={1} step={0.05} onChange={(v) => onChange({ vignette: v })} />
+        <Row label="Star count">
+          <Slider value={config.starCount} min={0} max={120} step={5} onChange={(v) => onChange({ starCount: v })} />
+        </Row>
+        <Row label="Star color">
+          <ColorField value={config.starColor} onChange={(v) => onChange({ starColor: v })} />
         </Row>
       </Section>
     </div>

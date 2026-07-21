@@ -4,10 +4,11 @@ import { useEffect, useRef } from "react"
 import { DEFAULT_CONFIG, type BannerConfig } from "@/lib/banner-config"
 
 /**
- * Fully parametric rendition of the AMETHYST banner.
+ * Fully parametric tiered nameplate renderer.
  *
  * Technique stack (highest realism achievable in the browser):
- *  1. Base plate  -> AI-generated photoreal nebula (public/nebula-bg.png)
+ *  1. Base plate  -> config-driven radial-gradient plate + procedural stars,
+ *                    with an optional AI-generated photoreal nebula overlay.
  *  2. Chrome text -> HTML5 <canvas> 2D, drawn in multiple passes:
  *        a. soft outer neon glow (blurred, tinted)
  *        b. dark extrusion / bevel offset downward for 3D depth
@@ -15,23 +16,42 @@ import { DEFAULT_CONFIG, type BannerConfig } from "@/lib/banner-config"
  *        d. clipped specular highlight band swept across the letters
  *        e. thin bright rim light on the top edge
  *  3. Sparkles    -> procedural 4-point lens-flare glints with radial bloom
+ *  4. Ornaments   -> SVG side pieces (frame / ingots / moons / orbs)
  *
- * Every visual is driven by the `config` prop so it can be edited live.
+ * Every visual is driven by the `config` prop so it can be edited live and
+ * swapped instantly between presets.
  */
 
-function seededSparkles(count: number) {
-  // Deterministic pseudo-random layout so re-renders are stable
-  const pts: { x: number; y: number; r: number }[] = []
-  let seed = 1337
-  const rand = () => {
-    seed = (seed * 9301 + 49297) % 233280
-    return seed / 233280
+function seeded(seed: number) {
+  let s = seed
+  return () => {
+    s = (s * 9301 + 49297) % 233280
+    return s / 233280
   }
+}
+
+function seededSparkles(count: number) {
+  const pts: { x: number; y: number; r: number }[] = []
+  const rand = seeded(1337)
   for (let i = 0; i < count; i++) {
     pts.push({
       x: 0.04 + (i / Math.max(1, count - 1)) * 0.92 + (rand() - 0.5) * 0.04,
       y: 0.42 + rand() * 0.42,
       r: 12 + rand() * 20,
+    })
+  }
+  return pts
+}
+
+function seededStars(count: number) {
+  const pts: { x: number; y: number; r: number; a: number }[] = []
+  const rand = seeded(9001)
+  for (let i = 0; i < count; i++) {
+    pts.push({
+      x: rand(),
+      y: rand(),
+      r: 0.4 + rand() * 1.3,
+      a: 0.25 + rand() * 0.75,
     })
   }
   return pts
@@ -110,6 +130,19 @@ function render(canvas: HTMLCanvasElement, config: BannerConfig) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   ctx.clearRect(0, 0, cssW, cssH)
 
+  // --- Pass 0: procedural stars over the plate ---------------------------
+  if (config.starCount > 0) {
+    ctx.save()
+    ctx.globalCompositeOperation = "screen"
+    for (const s of seededStars(config.starCount)) {
+      ctx.fillStyle = rgba(config.starColor, s.a)
+      ctx.beginPath()
+      ctx.arc(s.x * cssW, s.y * cssH, s.r, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.restore()
+  }
+
   const word = config.word || " "
   const cx = cssW / 2
   const cy = cssH * 0.6
@@ -121,7 +154,6 @@ function render(canvas: HTMLCanvasElement, config: BannerConfig) {
   ctx.textAlign = "center"
   ctx.textBaseline = "middle"
 
-  // Manual letter spacing support
   const useSpacing = letterSpacingPx !== 0
   const spacing = fontSize * letterSpacingPx
 
@@ -174,10 +206,11 @@ function render(canvas: HTMLCanvasElement, config: BannerConfig) {
   // --- Pass 2: dark extrusion for 3D depth -------------------------------
   if (config.depth > 0) {
     ctx.save()
+    const { r, g, b } = hexToRgb(config.chromeHorizon)
     const depthPx = Math.max(1, fontSize * config.depth)
     for (let d = depthPx; d > 0; d--) {
       const t = d / depthPx
-      ctx.fillStyle = `rgba(${30 + t * 20}, ${10 + t * 10}, ${50 + t * 30}, 1)`
+      ctx.fillStyle = `rgba(${r * 0.35 + t * 20}, ${g * 0.35 + t * 12}, ${b * 0.35 + t * 20}, 1)`
       drawText(d)
     }
     ctx.restore()
@@ -223,6 +256,102 @@ function render(canvas: HTMLCanvasElement, config: BannerConfig) {
   }
 }
 
+// --- Side ornaments (SVG) --------------------------------------------------
+
+function Ornaments({ config }: { config: BannerConfig }) {
+  const c = config.ornamentColor
+  if (config.ornament === "none") return null
+
+  const side = (mirror: boolean) => {
+    const style: React.CSSProperties = {
+      position: "absolute",
+      top: "50%",
+      [mirror ? "right" : "left"]: "3%",
+      transform: `translateY(-50%) ${mirror ? "scaleX(-1)" : ""}`,
+      zIndex: 3,
+    }
+
+    if (config.ornament === "ingots") {
+      return (
+        <svg key={String(mirror)} width="58" height="42" viewBox="0 0 58 42" style={style} aria-hidden="true">
+          <polygon points="6,34 20,34 26,42 0,42" fill={c} opacity="0.55" />
+          <polygon points="10,24 24,24 30,32 4,32" fill={c} opacity="0.75" />
+          <polygon points="16,14 30,14 36,22 10,22" fill={c} />
+          <polygon points="16,14 30,14 30,17 16,17" fill="#ffffff" opacity="0.6" />
+        </svg>
+      )
+    }
+
+    if (config.ornament === "moons") {
+      return (
+        <svg key={String(mirror)} width="34" height="34" viewBox="0 0 34 34" style={style} aria-hidden="true">
+          <defs>
+            <mask id={`moon-${mirror}`}>
+              <rect width="34" height="34" fill="#fff" />
+              <circle cx="22" cy="15" r="12" fill="#000" />
+            </mask>
+          </defs>
+          <circle cx="16" cy="17" r="12" fill={c} mask={`url(#moon-${mirror})`} />
+        </svg>
+      )
+    }
+
+    if (config.ornament === "orbs") {
+      return (
+        <svg key={String(mirror)} width="40" height="40" viewBox="0 0 40 40" style={style} aria-hidden="true">
+          <circle cx="20" cy="20" r="15" fill="none" stroke={c} strokeWidth="1.5" opacity="0.8" />
+          <circle cx="20" cy="20" r="9" fill="none" stroke="#4fd0ff" strokeWidth="1.5" opacity="0.8" />
+          <circle cx="20" cy="20" r="4" fill="#ffcf5c" opacity="0.9" />
+          <circle cx="20" cy="5" r="1.6" fill="#ff8fd0" />
+          <circle cx="35" cy="20" r="1.6" fill="#b6ff9c" />
+        </svg>
+      )
+    }
+
+    return null
+  }
+
+  if (config.ornament === "frame") {
+    return (
+      <div
+        style={{
+          position: "absolute",
+          inset: "8%",
+          border: `1px solid ${rgba(c, 0.6)}`,
+          borderRadius: 3,
+          zIndex: 3,
+          pointerEvents: "none",
+        }}
+      >
+        {[
+          { top: -3, left: -3 },
+          { top: -3, right: -3 },
+          { bottom: -3, left: -3 },
+          { bottom: -3, right: -3 },
+        ].map((pos, i) => (
+          <span
+            key={i}
+            style={{
+              position: "absolute",
+              width: 6,
+              height: 6,
+              background: c,
+              ...pos,
+            }}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {side(false)}
+      {side(true)}
+    </>
+  )
+}
+
 export function AmethystBanner({ config: configProp }: { config?: BannerConfig }) {
   // Guard against an undefined/partial config (e.g. during HMR) so the
   // preview never crashes; missing keys fall back to sensible defaults.
@@ -265,31 +394,54 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
         aspectRatio: "234 / 60",
         overflow: "hidden",
         borderRadius: 4,
-        backgroundColor: "#06030e",
+        backgroundColor: config.bgOuter,
       }}
     >
-      {/* Base plate: AI-generated photoreal nebula */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/nebula-bg.png"
-        alt="Deep space amethyst nebula"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
-      />
-
-      {/* Vignette to deepen the edges like the source */}
+      {/* Config-driven plate: radial glow from center to dark edges */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 85% 120% at 50% 50%, transparent 40%, rgba(4,2,10,${config.vignette}) 85%)`,
+          background: `
+            radial-gradient(ellipse 70% 120% at 50% 55%, ${rgba(config.bgAccent, 0.7)}, transparent 70%),
+            radial-gradient(ellipse 120% 120% at 50% 45%, ${config.bgInner}, ${config.bgOuter} 80%)
+          `,
         }}
       />
+
+      {/* Optional AI nebula overlay (Amethyst) */}
+      {config.showNebula && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="/nebula-bg.png"
+          alt=""
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            mixBlendMode: "screen",
+            opacity: 0.9,
+          }}
+        />
+      )}
+
+      {/* Vignette to deepen the edges */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(ellipse 85% 120% at 50% 50%, transparent 40%, ${rgba(
+            config.bgOuter,
+            config.vignette,
+          )} 85%)`,
+        }}
+      />
+
+      {/* Side ornaments */}
+      <Ornaments config={config} />
 
       {/* Top emblem + tagline */}
       {(config.showEmblem || config.showTagline) && (
@@ -308,15 +460,15 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
         >
           {config.showEmblem && (
             <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(235,220,255,0.9)" strokeWidth="1" />
+              <circle cx="12" cy="12" r="10" fill="none" stroke={rgba(config.ornamentColor, 0.9)} strokeWidth="1" />
               <path
                 d="M6 9 L12 4 L18 9 L15 16 L9 16 Z"
                 fill="none"
-                stroke="rgba(235,220,255,0.9)"
+                stroke={rgba(config.ornamentColor, 0.9)}
                 strokeWidth="1"
                 strokeLinejoin="round"
               />
-              <circle cx="12" cy="11" r="2.2" fill="rgba(235,220,255,0.9)" />
+              <circle cx="12" cy="11" r="2.2" fill={rgba(config.ornamentColor, 0.9)} />
             </svg>
           )}
           {config.showTagline && (
@@ -324,11 +476,11 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
               style={{
                 fontSize: "clamp(5px, 1.1vw, 9px)",
                 letterSpacing: "0.35em",
-                color: "rgba(225,205,255,0.75)",
+                color: rgba(config.starColor, 0.8),
                 textTransform: "uppercase",
                 whiteSpace: "nowrap",
                 fontFamily: "Georgia, serif",
-                textShadow: "0 0 6px rgba(150,90,230,0.8)",
+                textShadow: `0 0 6px ${rgba(config.glowColor, 0.8)}`,
               }}
             >
               {config.tagline}
