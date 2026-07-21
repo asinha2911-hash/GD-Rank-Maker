@@ -87,7 +87,7 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
     >
       <span
         className={`absolute top-0.5 h-5 w-5 rounded-full bg-background transition-transform ${
-          value ? "translate-x-5" : "translate-x-0.5"
+          value ? "translate-x-2" : "translate-x-0.5"
         }`}
       />
     </button>
