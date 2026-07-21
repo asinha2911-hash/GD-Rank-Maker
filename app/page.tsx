@@ -1,38 +1,54 @@
 import { AmethystBanner } from "@/components/amethyst-banner"
 
-const CODE = `export function AmethystBanner() {
+const CODE = `// Hybrid raster + canvas composite for maximum realism
+export function AmethystBanner() {
   return (
-    <div style={{
-      position: "relative",
-      aspectRatio: "234 / 60",
-      background: \`
-        radial-gradient(ellipse 55% 90% at 50% 45%, rgba(150,70,220,.55), transparent 70%),
-        radial-gradient(circle at 50% 40%, rgba(200,150,255,.35), transparent 45%),
-        radial-gradient(ellipse 120% 120% at 50% 50%, #1a0a2e 20%, #08040f 80%)
-      \`,
-    }}>
-      {/* twinkling star field + four-point sparkles */}
-      <h1 style={{
-        fontFamily: "Georgia, serif",
-        fontWeight: 700,
-        background: "linear-gradient(180deg,#fff 0%,#b9a9d0 48%,#6f5f90 52%,#fff 100%)",
-        WebkitBackgroundClip: "text",
-        color: "transparent",
-        textShadow: "0 0 18px rgba(180,130,255,.8)",
-      }}>
-        AMETHYST
-      </h1>
+    <div style={{ position: "relative", aspectRatio: "234 / 60" }}>
+      {/* 1. Base plate: AI-generated photoreal nebula */}
+      <img src="/nebula-bg.png" style={{ objectFit: "cover" }} />
+
+      {/* 2. Chrome text drawn on <canvas> at devicePixelRatio */}
+      <canvas ref={canvasRef} />
     </div>
   )
+}
+
+// render() draws the word in layered passes:
+function render(canvas) {
+  const ctx = canvas.getContext("2d")
+
+  // a. outer neon violet glow (shadowBlur, stacked)
+  ctx.shadowColor = "rgba(165,85,240,.95)"
+  ctx.shadowBlur = fontSize * 0.55
+  ctx.fillText("AMETHYST", cx, cy)
+
+  // b. dark extrusion offset down -> 3D depth
+  for (let d = depth; d > 0; d--) ctx.fillText("AMETHYST", cx, cy + d)
+
+  // c. multi-stop vertical CHROME gradient fill
+  const chrome = ctx.createLinearGradient(0, topY, 0, botY)
+  chrome.addColorStop(0.0, "#ffffff")
+  chrome.addColorStop(0.5, "#7d6ca0")   // dark chrome horizon
+  chrome.addColorStop(0.52, "#5f4f82")
+  chrome.addColorStop(1.0, "#ffffff")
+  ctx.fillStyle = chrome
+  ctx.fillText("AMETHYST", cx, cy)
+
+  // d. clipped specular highlight sweep (source-atop)
+  // e. bright rim light on top edge (strokeText)
+  // f. procedural 4-point lens-flare sparkles (screen blend)
 }`
 
 export default function Page() {
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 font-sans">
       <div className="mx-auto max-w-5xl px-4 py-12 flex flex-col gap-10">
-        <header className="flex flex-col gap-1">
+        <header className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold text-balance">AMETHYST banner recreation</h1>
-          <p className="text-sm text-neutral-400">A pure-CSS rendition of the cosmic galaxy banner.</p>
+          <p className="text-sm text-neutral-400 text-pretty">
+            A hybrid rendition: an AI-generated photoreal nebula plate, chrome typography rendered on an
+            HTML5 canvas in multiple metal passes, and procedural lens-flare sparkles composited on top.
+          </p>
         </header>
 
         <section className="flex flex-col gap-3">
@@ -50,7 +66,7 @@ export default function Page() {
         </section>
 
         <section className="flex flex-col gap-3">
-          <span className="text-xs uppercase tracking-widest text-neutral-500">Code</span>
+          <span className="text-xs uppercase tracking-widest text-neutral-500">Technique &amp; code</span>
           <pre className="overflow-x-auto rounded border border-neutral-800 bg-neutral-900 p-4 text-xs leading-relaxed text-neutral-300">
             <code>{CODE}</code>
           </pre>

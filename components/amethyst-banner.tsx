@@ -1,48 +1,198 @@
 "use client"
 
-import type { CSSProperties } from "react"
+import { useEffect, useRef } from "react"
 
-// Deterministic pseudo-random star field so it renders identically on server & client
-const STARS = Array.from({ length: 90 }, (_, i) => {
-  const seed = (n: number) => {
-    const x = Math.sin((i + 1) * n) * 10000
-    return x - Math.floor(x)
-  }
-  return {
-    left: seed(12.9898) * 100,
-    top: seed(78.233) * 100,
-    size: 0.5 + seed(37.719) * 1.6,
-    opacity: 0.3 + seed(4.123) * 0.7,
-    twinkle: 1.5 + seed(9.11) * 3,
-    delay: seed(2.71) * 3,
-  }
-})
+/**
+ * Advanced realistic rendition of the AMETHYST banner.
+ *
+ * Technique stack (highest realism achievable in the browser):
+ *  1. Base plate  -> AI-generated photoreal nebula (public/nebula-bg.png)
+ *  2. Chrome text -> HTML5 <canvas> 2D, drawn in multiple passes:
+ *        a. soft outer neon glow (blurred violet)
+ *        b. dark extrusion / bevel offset downward for 3D depth
+ *        c. multi-stop vertical metallic gradient fill (the "chrome")
+ *        d. clipped specular highlight band swept across the letters
+ *        e. thin bright rim light on the top edge
+ *  3. Sparkles    -> procedural 4-point lens-flare glints with radial bloom
+ *
+ * Everything is rendered at devicePixelRatio for crisp, retina-quality metal.
+ */
 
-// A few bigger four-point sparkles scattered around the text
+const WORD = "AMETHYST"
+
+// Lens-flare sparkle positions (normalised 0..1 across the banner)
 const SPARKLES = [
-  { left: 6, top: 30, size: 14 },
-  { left: 15, top: 68, size: 9 },
-  { left: 28, top: 22, size: 10 },
-  { left: 41, top: 74, size: 12 },
-  { left: 52, top: 34, size: 16 },
-  { left: 63, top: 70, size: 9 },
-  { left: 74, top: 26, size: 13 },
-  { left: 86, top: 60, size: 11 },
-  { left: 94, top: 40, size: 10 },
+  { x: 0.05, y: 0.52, r: 26 },
+  { x: 0.14, y: 0.78, r: 14 },
+  { x: 0.26, y: 0.42, r: 18 },
+  { x: 0.4, y: 0.8, r: 20 },
+  { x: 0.5, y: 0.5, r: 30 },
+  { x: 0.61, y: 0.8, r: 16 },
+  { x: 0.74, y: 0.44, r: 22 },
+  { x: 0.86, y: 0.72, r: 18 },
+  { x: 0.95, y: 0.55, r: 20 },
 ]
 
-function Sparkle({ style }: { style: CSSProperties }) {
-  return (
-    <svg viewBox="0 0 100 100" style={style} aria-hidden="true">
-      <path
-        d="M50 0 C53 38 62 47 100 50 C62 53 53 62 50 100 C47 62 38 53 0 50 C38 47 47 38 50 0 Z"
-        fill="white"
-      />
-    </svg>
-  )
+function drawSparkle(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.globalCompositeOperation = "screen"
+
+  // Radial bloom
+  const bloom = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 1.4)
+  bloom.addColorStop(0, "rgba(255,255,255,0.9)")
+  bloom.addColorStop(0.2, "rgba(225,200,255,0.5)")
+  bloom.addColorStop(1, "rgba(150,90,230,0)")
+  ctx.fillStyle = bloom
+  ctx.beginPath()
+  ctx.arc(0, 0, r * 1.4, 0, Math.PI * 2)
+  ctx.fill()
+
+  // Four-point star streaks
+  const streak = ctx.createLinearGradient(-r, 0, r, 0)
+  streak.addColorStop(0, "rgba(255,255,255,0)")
+  streak.addColorStop(0.5, "rgba(255,255,255,0.95)")
+  streak.addColorStop(1, "rgba(255,255,255,0)")
+  ctx.fillStyle = streak
+  ctx.beginPath()
+  ctx.moveTo(-r, 0)
+  ctx.lineTo(0, -1.5)
+  ctx.lineTo(r, 0)
+  ctx.lineTo(0, 1.5)
+  ctx.closePath()
+  ctx.fill()
+
+  const streakV = ctx.createLinearGradient(0, -r, 0, r)
+  streakV.addColorStop(0, "rgba(255,255,255,0)")
+  streakV.addColorStop(0.5, "rgba(255,255,255,0.95)")
+  streakV.addColorStop(1, "rgba(255,255,255,0)")
+  ctx.fillStyle = streakV
+  ctx.beginPath()
+  ctx.moveTo(0, -r)
+  ctx.lineTo(1.5, 0)
+  ctx.lineTo(0, r)
+  ctx.lineTo(-1.5, 0)
+  ctx.closePath()
+  ctx.fill()
+
+  ctx.restore()
+}
+
+function render(canvas: HTMLCanvasElement) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)
+  const cssW = canvas.clientWidth
+  const cssH = canvas.clientHeight
+  canvas.width = Math.round(cssW * dpr)
+  canvas.height = Math.round(cssH * dpr)
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  ctx.clearRect(0, 0, cssW, cssH)
+
+  const cx = cssW / 2
+  const cy = cssH * 0.6
+
+  // Fit the word to the width
+  const fontSize = Math.min(cssH * 0.42, (cssW / WORD.length) * 1.25)
+  const font = `700 ${fontSize}px Georgia, "Times New Roman", serif`
+  ctx.font = font
+  ctx.textAlign = "center"
+  ctx.textBaseline = "middle"
+
+  const metrics = ctx.measureText(WORD)
+  const topY = cy - fontSize * 0.5
+  const botY = cy + fontSize * 0.5
+
+  // --- Pass 1: outer neon violet glow ------------------------------------
+  ctx.save()
+  ctx.shadowColor = "rgba(165,85,240,0.95)"
+  ctx.shadowBlur = fontSize * 0.55
+  ctx.fillStyle = "rgba(200,150,255,0.6)"
+  for (let i = 0; i < 3; i++) ctx.fillText(WORD, cx, cy) // stack for intensity
+  ctx.restore()
+
+  // --- Pass 2: dark extrusion for 3D depth -------------------------------
+  ctx.save()
+  const depth = Math.max(1, fontSize * 0.03)
+  for (let d = depth; d > 0; d--) {
+    const t = d / depth
+    ctx.fillStyle = `rgba(${30 + t * 20}, ${10 + t * 10}, ${50 + t * 30}, 1)`
+    ctx.fillText(WORD, cx, cy + d)
+  }
+  ctx.restore()
+
+  // --- Pass 3: metallic chrome gradient fill -----------------------------
+  const chrome = ctx.createLinearGradient(0, topY, 0, botY)
+  chrome.addColorStop(0.0, "#ffffff")
+  chrome.addColorStop(0.22, "#f2ecfa")
+  chrome.addColorStop(0.42, "#c7b8de")
+  chrome.addColorStop(0.5, "#7d6ca0") // dark horizon line of the chrome
+  chrome.addColorStop(0.52, "#5f4f82")
+  chrome.addColorStop(0.62, "#b6a6d4")
+  chrome.addColorStop(0.82, "#efe8fa")
+  chrome.addColorStop(1.0, "#ffffff")
+  ctx.fillStyle = chrome
+  ctx.fillText(WORD, cx, cy)
+
+  // --- Pass 4: specular highlight band (clipped to the glyphs) -----------
+  ctx.save()
+  // Build a clip region from the text itself
+  ctx.beginPath()
+  // canvas has no direct text-to-path, so re-draw text as clip via fill + composite
+  ctx.globalCompositeOperation = "source-atop"
+  const spec = ctx.createLinearGradient(0, topY, 0, cy)
+  spec.addColorStop(0, "rgba(255,255,255,0)")
+  spec.addColorStop(0.55, "rgba(255,255,255,0.85)")
+  spec.addColorStop(1, "rgba(255,255,255,0)")
+  ctx.fillStyle = spec
+  ctx.fillRect(cx - metrics.width, topY, metrics.width * 2, fontSize * 0.42)
+  ctx.restore()
+
+  // --- Pass 5: thin bright rim on top edge -------------------------------
+  ctx.save()
+  ctx.globalCompositeOperation = "source-atop"
+  ctx.strokeStyle = "rgba(255,255,255,0.7)"
+  ctx.lineWidth = Math.max(0.5, fontSize * 0.012)
+  ctx.strokeText(WORD, cx, cy - fontSize * 0.008)
+  ctx.restore()
+
+  // --- Sparkles ----------------------------------------------------------
+  for (const s of SPARKLES) {
+    drawSparkle(ctx, s.x * cssW, s.y * cssH, s.r * (cssW / 936))
+  }
 }
 
 export function AmethystBanner() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    let raf = 0
+    const draw = () => render(canvas)
+
+    // Ensure the serif font is ready before drawing text
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        raf = requestAnimationFrame(draw)
+      })
+    } else {
+      raf = requestAnimationFrame(draw)
+    }
+
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(draw)
+    })
+    ro.observe(canvas)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [])
+
   return (
     <div
       style={{
@@ -52,53 +202,32 @@ export function AmethystBanner() {
         aspectRatio: "234 / 60",
         overflow: "hidden",
         borderRadius: 4,
-        // Layered radial gradients build the mottled purple nebula over deep space
-        background: `
-          radial-gradient(ellipse 45% 80% at 50% 48%, rgba(180, 90, 240, 0.6), transparent 65%),
-          radial-gradient(ellipse 22% 45% at 28% 58%, rgba(120, 50, 190, 0.55), transparent 70%),
-          radial-gradient(ellipse 25% 50% at 70% 42%, rgba(140, 70, 220, 0.5), transparent 70%),
-          radial-gradient(ellipse 18% 35% at 60% 68%, rgba(80, 30, 140, 0.45), transparent 70%),
-          radial-gradient(circle at 50% 42%, rgba(210, 160, 255, 0.4), transparent 40%),
-          radial-gradient(ellipse 90% 130% at 50% 50%, transparent 35%, rgba(6, 3, 14, 0.85) 78%),
-          radial-gradient(ellipse 130% 120% at 50% 50%, #1a0a2e 15%, #08040f 75%)
-        `,
+        backgroundColor: "#06030e",
       }}
     >
-      {/* Star field */}
-      {STARS.map((s, i) => (
-        <span
-          key={i}
-          style={{
-            position: "absolute",
-            left: `${s.left}%`,
-            top: `${s.top}%`,
-            width: s.size,
-            height: s.size,
-            borderRadius: "50%",
-            background: "white",
-            opacity: s.opacity,
-            boxShadow: "0 0 4px rgba(255,255,255,0.9)",
-            animation: `am-twinkle ${s.twinkle}s ease-in-out ${s.delay}s infinite`,
-          }}
-        />
-      ))}
+      {/* Base plate: AI-generated photoreal nebula */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/nebula-bg.png"
+        alt="Deep space amethyst nebula"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+      />
 
-      {/* Big sparkles */}
-      {SPARKLES.map((sp, i) => (
-        <Sparkle
-          key={i}
-          style={{
-            position: "absolute",
-            left: `${sp.left}%`,
-            top: `${sp.top}%`,
-            width: sp.size,
-            height: sp.size,
-            transform: "translate(-50%, -50%)",
-            filter: "drop-shadow(0 0 3px rgba(220,190,255,0.9))",
-            opacity: 0.9,
-          }}
-        />
-      ))}
+      {/* Vignette to deepen the edges like the source */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse 85% 120% at 50% 50%, transparent 40%, rgba(4,2,10,0.85) 85%)",
+        }}
+      />
 
       {/* Top emblem + tagline */}
       <div
@@ -114,72 +243,45 @@ export function AmethystBanner() {
           zIndex: 3,
         }}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(230,210,255,0.85)" strokeWidth="1" />
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(235,220,255,0.9)" strokeWidth="1" />
           <path
             d="M6 9 L12 4 L18 9 L15 16 L9 16 Z"
             fill="none"
-            stroke="rgba(230,210,255,0.85)"
+            stroke="rgba(235,220,255,0.9)"
             strokeWidth="1"
             strokeLinejoin="round"
           />
-          <circle cx="12" cy="11" r="2.2" fill="rgba(230,210,255,0.85)" />
+          <circle cx="12" cy="11" r="2.2" fill="rgba(235,220,255,0.9)" />
         </svg>
         <span
           style={{
             fontSize: "clamp(5px, 1.1vw, 9px)",
             letterSpacing: "0.35em",
-            color: "rgba(220,200,255,0.7)",
+            color: "rgba(225,205,255,0.75)",
             textTransform: "uppercase",
             whiteSpace: "nowrap",
             fontFamily: "Georgia, serif",
+            textShadow: "0 0 6px rgba(150,90,230,0.8)",
           }}
         >
           The Amethyst Order
         </span>
       </div>
 
-      {/* Main chrome text */}
-      <div
+      {/* Chrome text canvas */}
+      <canvas
+        ref={canvasRef}
         style={{
           position: "absolute",
           inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          paddingTop: "12%",
+          width: "100%",
+          height: "100%",
           zIndex: 2,
         }}
-      >
-        <h1
-          style={{
-            margin: 0,
-            fontFamily: "Georgia, 'Times New Roman', serif",
-            fontWeight: 700,
-            fontSize: "clamp(28px, 8.5vw, 82px)",
-            letterSpacing: "0.06em",
-            lineHeight: 1,
-            // Metallic silver/chrome gradient fill
-            background:
-              "linear-gradient(180deg, #ffffff 0%, #e8e0f0 30%, #b9a9d0 48%, #6f5f90 52%, #d8cfe8 70%, #ffffff 100%)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-            WebkitTextStroke: "0.75px rgba(200,150,255,0.5)",
-            textShadow:
-              "0 0 8px rgba(220,180,255,0.9), 0 0 22px rgba(180,110,255,0.9), 0 0 45px rgba(150,70,230,0.8), 0 0 70px rgba(120,50,200,0.6)",
-          }}
-        >
-          AMETHYST
-        </h1>
-      </div>
-
-      <style>{`
-        @keyframes am-twinkle {
-          0%, 100% { opacity: 0.25; transform: scale(0.8); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-      `}</style>
+        aria-label="AMETHYST"
+        role="img"
+      />
     </div>
   )
 }
