@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import type { BannerConfig } from "@/lib/banner-config"
+import { DEFAULT_CONFIG, type BannerConfig } from "@/lib/banner-config"
 
 /**
  * Fully parametric rendition of the AMETHYST banner.
@@ -223,7 +223,10 @@ function render(canvas: HTMLCanvasElement, config: BannerConfig) {
   }
 }
 
-export function AmethystBanner({ config }: { config: BannerConfig }) {
+export function AmethystBanner({ config: configProp }: { config?: BannerConfig }) {
+  // Guard against an undefined/partial config (e.g. during HMR) so the
+  // preview never crashes; missing keys fall back to sensible defaults.
+  const config: BannerConfig = { ...DEFAULT_CONFIG, ...configProp }
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
