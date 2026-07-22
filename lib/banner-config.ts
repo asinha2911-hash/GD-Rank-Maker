@@ -39,7 +39,7 @@ export type BannerConfig = {
 
   showNebula: boolean
 
-  backgroundImage?: string
+  showBloodstone?: boolean
 
   starColor: string
   starCount: number
