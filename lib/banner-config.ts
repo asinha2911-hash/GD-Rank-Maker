@@ -32,13 +32,18 @@ export type BannerConfig = {
   sparkleColor: string
 
   // Background plate
-  bgInner: string // glow at the center of the plate
-  bgOuter: string // dark edges
-  bgAccent: string // nebula-like accent tint
-  showNebula: boolean // overlay the AI nebula image (Amethyst)
+  // Background plate
+  bgInner: string
+  bgOuter: string
+  bgAccent: string
+
+  showNebula: boolean
+
+  backgroundImage?: string
+
   starColor: string
   starCount: number
-  vignette: number // 0..1 darkness of edges
+  vignette: number
 
   // Side ornaments
   ornament: OrnamentType
@@ -354,6 +359,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#020805",
     bgAccent: "#3a0806",
     showNebula: false,
+    backgroundImage: BLOODSTONE_BG_BASE64,
     starColor: "#9dff8a",
     starCount: 55,
     vignette: 0.84,
