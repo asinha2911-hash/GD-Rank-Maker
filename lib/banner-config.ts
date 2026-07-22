@@ -360,6 +360,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgAccent: "#3a0806",
     showNebula: false,
     showBloodstone: true,
+    showAmmolite: false,
     starColor: "#9dff8a",
     starCount: 55,
     vignette: 0.84,
