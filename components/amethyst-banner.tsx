@@ -354,6 +354,7 @@ function Ornaments({ config }: { config: BannerConfig }) {
 
 // 1. PLACE YOUR CONVERTED BASE64 STRING HERE (Replace the short placeholder below)
 import { BLOODSTONE_BG_BASE64 } from '../public/bloodstone';
+import { BLOODSTONE_BG_BASE64 } from '../public/bloodstone';
 export function AmethystBanner({ config: configProp }: { config?: BannerConfig }) {
   // Guard against an undefined/partial config (e.g. during HMR) so the
   // preview never crashes; missing keys fall back to sensible defaults.
