@@ -1,5 +1,5 @@
 export type OrnamentType = "none" | "frame" | "ingots" | "moons" | "orbs"
-
+import { BLOODSTONE_BG_BASE64 } from '../public/bloodstone';
 export type BannerConfig = {
   word: string
   tagline: string
