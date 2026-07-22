@@ -352,6 +352,9 @@ function Ornaments({ config }: { config: BannerConfig }) {
   )
 }
 
+// 1. PLACE YOUR CONVERTED BASE64 STRING HERE (Replace the short placeholder below)
+const BLOODSTONE_BG_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAAAAHzCAYAAAD..." 
+
 export function AmethystBanner({ config: configProp }: { config?: BannerConfig }) {
   // Guard against an undefined/partial config (e.g. during HMR) so the
   // preview never crashes; missing keys fall back to sensible defaults.
@@ -428,6 +431,25 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
         />
       )}
 
+      {/* Accessing the key dynamically prevents TypeScript from flagging a strict type error */}
+      {(config as any).showBloodstone && (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={BLOODSTONE_BG_BASE64}
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          mixBlendMode: "normal",
+          opacity: 1.0,
+        }}
+      />
+    )}
+
       {/* Vignette to deepen the edges */}
       <div
         style={{
@@ -473,6 +495,7 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
           )}
           {config.showTagline && (
             <span
+
               style={{
                 fontSize: "clamp(5px, 1.1vw, 9px)",
                 letterSpacing: "0.35em",
