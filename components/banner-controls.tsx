@@ -266,6 +266,12 @@ export function BannerControls({ config, activePreset, onSelectPreset, onChange,
             onChange={(v) => onChange({ showBloodstone: v } as any)} 
           /> 
         </Row>
+        <Row label="Ammolite overlay"> 
+          <Toggle 
+            value={(config as any).showAmmolite} 
+            onChange={(v) => onChange({ showAmmolite: v } as any)} 
+          /> 
+        </Row>
 
         <Row label="Vignette">
           <Slider value={config.vignette} min={0} max={1} step={0.05} onChange={(v) => onChange({ vignette: v })} />
