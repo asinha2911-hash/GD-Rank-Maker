@@ -452,7 +452,7 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
     {(config as any).showAmmolite && (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={BLOODSTONE_BG_BASE64}
+        src={AMMOLITE_BG_BASE64}
         alt=""
         aria-hidden="true"
         style={{
