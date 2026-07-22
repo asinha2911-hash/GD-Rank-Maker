@@ -359,7 +359,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#020805",
     bgAccent: "#3a0806",
     showNebula: false,
-    backgroundImage: BLOODSTONE_BG_BASE64,
+    showBloodstone: true,
     starColor: "#9dff8a",
     starCount: 55,
     vignette: 0.84,
