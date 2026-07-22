@@ -261,9 +261,12 @@ export function BannerControls({ config, activePreset, onSelectPreset, onChange,
           <Toggle value={config.showNebula} onChange={(v) => onChange({ showNebula: v })} />
         </Row>
         <Row label="Bloodstone overlay"> 
-        {/* Updated to check and update showBloodstone instead of duplicating showNebula */}
-          <Toggle value={(config as any).showBloodstone} onChange={(v) => onChange({ showBloodstone: v })} /> 
+          <Toggle 
+            value={(config as any).showBloodstone} 
+            onChange={(v) => onChange({ showBloodstone: v } as any)} 
+          /> 
         </Row>
+
         <Row label="Vignette">
           <Slider value={config.vignette} min={0} max={1} step={0.05} onChange={(v) => onChange({ vignette: v })} />
         </Row>
