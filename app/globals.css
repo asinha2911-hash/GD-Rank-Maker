@@ -163,3 +163,33 @@
     @apply bg-background text-foreground;
   }
 }
+/* Universal dark purple UI controls */
+input,
+select,
+textarea,
+button {
+  color: var(--foreground);
+  background-color: var(--card);
+  border-color: var(--border);
+  color-scheme: dark;
+}
+
+/* Dropdown options */
+select option {
+  color: var(--foreground);
+  background-color: var(--card);
+}
+
+/* Range sliders */
+input[type="range"] {
+  accent-color: var(--primary);
+}
+
+/* Buttons */
+button {
+  transition: opacity 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.85;
+}
