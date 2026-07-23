@@ -1,4 +1,5 @@
-export type OrnamentType = "none" | "frame" | "ingots" | "moons" | "orbs"
+export type OrnamentType = "none" | "frame" | "ingots" | "moons" | "orbs" | "diamond"
+export type ObjectType = "none" | "diamond"
 import type { BackgroundType } from "./backgrounds"
 import { BLOODSTONE_BG_BASE64 } from '../public/bloodstone';
 
@@ -120,6 +121,9 @@ export type BannerConfig = {
   ornament: OrnamentType
   ornamentColor: string
 
+  // Optional overlay object
+  object: ObjectType
+
   // Animation
   enableAnimation: boolean
 }
@@ -159,6 +163,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.8,
     ornament: "frame",
     ornamentColor: "#b8bec8",
+    object: "none",
     enableAnimation: false,
   },
   Opal: {
@@ -190,6 +195,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#a8e0f2",
+    object: "none",
     enableAnimation: false,
   },
   Tourmaline: {
@@ -221,6 +227,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#ff6fbf",
+    object: "none",
     enableAnimation: false,
   },
   Almandine: {
@@ -252,6 +259,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.85,
     ornament: "none",
     ornamentColor: "#c8362a",
+    object: "none",
     enableAnimation: false,
   },
   Ruby: {
@@ -283,6 +291,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#ff2d6a",
+    object: "none",
     enableAnimation: false,
   },
   Gold: {
@@ -314,6 +323,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "ingots",
     ornamentColor: "#ffcf4d",
+    object: "none",
     enableAnimation: false,
   },
   Moonstone: {
@@ -345,6 +355,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.84,
     ornament: "moons",
     ornamentColor: "#cde0ff",
+    object: "none",
     enableAnimation: false,
   },
   Diamond: {
@@ -374,8 +385,9 @@ export const PRESETS: Record<string, BannerConfig> = {
     starColor: "#eaffff",
     starCount: 70,
     vignette: 0.8,
-    ornament: "none",
+    ornament: "diamond",
     ornamentColor: "#d6f2ff",
+    object: "diamond",
     enableAnimation: false,
   },
   Ammolite: {

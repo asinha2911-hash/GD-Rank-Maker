@@ -114,6 +114,7 @@ const ORNAMENTS: { label: string; value: OrnamentType }[] = [
   { label: "Gold ingots", value: "ingots" },
   { label: "Crescent moons", value: "moons" },
   { label: "Aurora orbs", value: "orbs" },
+  { label: "Diamond", value: "diamond" },
 ]
 
 /** A small swatch that previews the chrome gradient of a preset. */

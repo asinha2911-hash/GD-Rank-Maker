@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 import { DEFAULT_CONFIG, type BannerConfig } from "@/lib/banner-config"
 import { BACKGROUNDS } from "@/lib/backgrounds"
+import { DIAMOND_OBJECT_BASE64 } from "@/public/diamond"
 
 /**
  * Fully parametric tiered nameplate renderer.
@@ -306,6 +307,42 @@ function Ornaments({ config }: { config: BannerConfig }) {
           <circle cx="20" cy="5" r="1.6" fill="#ff8fd0" />
           <circle cx="35" cy="20" r="1.6" fill="#b6ff9c" />
         </svg>
+      )
+    }
+
+    if (config.ornament === "diamond") {
+      return (
+        <div
+          key={String(mirror)}
+          style={{
+            ...style,
+            width: "clamp(88px, 10vw, 136px)",
+            height: "auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: 0.95,
+            filter: `drop-shadow(0 0 8px ${rgba(c, 0.7)})`,
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={DIAMOND_OBJECT_BASE64}
+            alt=""
+            aria-hidden="true"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              background: "transparent",
+              pointerEvents: "none",
+               // Instantly drops the black background and blends the facets into your app
+              mixBlendMode: "screen", 
+              // Enhances clarity and crispness over your existing colors
+              filter: "contrast(1.1) brightness(1.05)", 
+            }}
+          />
+        </div>
       )
     }
 
