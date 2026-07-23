@@ -3,15 +3,17 @@ import { BLOODSTONE_BG_BASE64 } from "@/public/bloodstone"
 import { AMMOLITE_BG_BASE64 } from "@/public/ammolite"
 
 export type BackgroundType =
-  | "default"
+  | "none"
   | "amethyst"
   | "bloodstone"
   | "ammolite"
   | "nebula"
 
 export const BACKGROUNDS = {
-  default: {
-    type: "default",
+   none: {
+    name: "None",
+    src: "",
+    type: "none",
   },
 
   amethyst: {
