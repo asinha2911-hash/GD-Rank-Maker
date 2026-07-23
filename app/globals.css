@@ -193,3 +193,20 @@ button {
 button:hover {
   opacity: 0.85;
 }
+select option {
+  background-color: oklch(0.21 0.04 300);
+  color: oklch(0.96 0.01 300);
+}
+input,
+select,
+textarea,
+button {
+  color: var(--foreground);
+  background-color: var(--card);
+  border-color: var(--border);
+  color-scheme: dark;
+}
+
+input[type="range"] {
+  accent-color: var(--primary);
+}
