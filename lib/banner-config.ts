@@ -57,7 +57,7 @@ export type BannerConfig = {
 // ---------------------------------------------------------------------------
 
 export const PRESETS: Record<string, BannerConfig> = {
-  Silver: {
+   Silver: {
     word: "SILVER",
     tagline: "Tier I",
     showTagline: true,
@@ -81,13 +81,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#050608",
     bgAccent: "#2a2f38",
     showNebula: false,
+    showBloodstone: false,
+    showAmmolite: false,
+    showAmethyst: false,
     starColor: "#cdd3dc",
     starCount: 40,
     vignette: 0.8,
     ornament: "frame",
     ornamentColor: "#b8bec8",
   },
-
   Opal: {
     word: "OPAL",
     tagline: "Tier II",
@@ -112,13 +114,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#03080b",
     bgAccent: "#123842",
     showNebula: false,
+    showBloodstone: false,
+    showAmmolite: false,
+    showAmethyst: false,
     starColor: "#d6ecff",
     starCount: 45,
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#a8e0f2",
   },
-
   Tourmaline: {
     word: "TOURMALINE",
     tagline: "Tier III",
@@ -143,13 +147,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#03100a",
     bgAccent: "#124a2a",
     showNebula: true,
+    showBloodstone: false,
+    showAmmolite: false,
+    showAmethyst: false,
     starColor: "#c8ffd8",
     starCount: 55,
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#ff6fbf",
   },
-
   Almandine: {
     word: "ALMANDINE",
     tagline: "Tier IV",
@@ -174,13 +180,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#0a0202",
     bgAccent: "#380a06",
     showNebula: false,
+    showBloodstone: false,
+    showAmmolite: false,
+    showAmethyst: false,
     starColor: "#ffb0a0",
     starCount: 40,
     vignette: 0.85,
     ornament: "none",
     ornamentColor: "#c8362a",
   },
-
   Ruby: {
     word: "RUBY",
     tagline: "Tier V",
@@ -205,13 +213,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#0c0104",
     bgAccent: "#48091a",
     showNebula: false,
+    showBloodstone: false,
+    showAmmolite: false,
+    showAmethyst: false,
     starColor: "#ffb0c2",
     starCount: 55,
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#ff2d6a",
   },
-
   Gold: {
     word: "GOLD",
     tagline: "Tier VI",
@@ -236,13 +246,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#080601",
     bgAccent: "#38280a",
     showNebula: false,
+    showBloodstone: false,
+    showAmmolite: false,
+    showAmethyst: false,
     starColor: "#ffe6a0",
     starCount: 45,
     vignette: 0.82,
     ornament: "ingots",
     ornamentColor: "#ffcf4d",
   },
-
   Moonstone: {
     word: "MOONSTONE",
     tagline: "Tier VII",
@@ -267,13 +279,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#03050b",
     bgAccent: "#141d38",
     showNebula: false,
+    showBloodstone: false,
+    showAmmolite: false,
+    showAmethyst: false,
     starColor: "#dceaff",
     starCount: 50,
     vignette: 0.84,
     ornament: "moons",
     ornamentColor: "#cde0ff",
   },
-
   Diamond: {
     word: "DIAMOND",
     tagline: "Tier IX · Apex",
@@ -298,13 +312,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#04070a",
     bgAccent: "#1c3038",
     showNebula: false,
+    showBloodstone: false,
+    showAmmolite: false,
+    showAmethyst: false,
     starColor: "#eaffff",
     starCount: 70,
     vignette: 0.8,
     ornament: "none",
     ornamentColor: "#d6f2ff",
   },
-
   Ammolite: {
     word: "AMMOLITE",
     tagline: "Tier X · Aurora",
@@ -329,14 +345,15 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#020a08",
     bgAccent: "#0e3a4a",
     showNebula: false,
+    showBloodstone: false,
     showAmmolite: true,
+    showAmethyst: false,
     starColor: "#c8ffe0",
     starCount: 60,
     vignette: 0.82,
     ornament: "orbs",
     ornamentColor: "#59e0a0",
   },
-
   Bloodstone: {
     word: "BLOODSTONE",
     tagline: "Tier XII",
@@ -363,14 +380,14 @@ export const PRESETS: Record<string, BannerConfig> = {
     showNebula: false,
     showBloodstone: true,
     showAmmolite: false,
+    showAmethyst: false,
     starColor: "#9dff8a",
     starCount: 55,
     vignette: 0.84,
     ornament: "none",
     ornamentColor: "#ff4030",
   },
-
-  Amethyst: {
+    Amethyst: {
     word: "AMETHYST",
     tagline: "The Amethyst Order",
     showTagline: true,
@@ -394,12 +411,14 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgOuter: "#06030e",
     bgAccent: "#5a2a90",
     showNebula: false,
+    showBloodstone: false,
+    showAmmolite: false,
     showAmethyst: true,
-    starColor: "#e6ccff",
-    starCount: 55,
-    vignette: 0.85,
-    ornament: "none",
-    ornamentColor: "#c9a8ff",
+    starColor: "#e6ccff",     // Added missing property
+    starCount: 55,            // Added missing property
+    vignette: 0.85,           // Added missing property
+    ornament: "none",         // Added missing property
+    ornamentColor: "#c9a8ff", // Added missing property
   },
 }
 
