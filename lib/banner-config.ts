@@ -1,4 +1,5 @@
 export type OrnamentType = "none" | "frame" | "ingots" | "moons" | "orbs"
+import type { BackgroundType } from "./backgrounds"
 import { BLOODSTONE_BG_BASE64 } from '../public/bloodstone';
 export type BannerConfig = {
   word: string
@@ -37,11 +38,8 @@ export type BannerConfig = {
   bgOuter: string
   bgAccent: string
 
- showNebula: boolean
-
-  showBloodstone?: boolean
-  showAmmolite?: boolean
-  showAmethyst?: boolean
+  // Background selection
+  background: BackgroundType
   starColor: string
   starCount: number
   vignette: number
@@ -80,10 +78,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#1a1d24",
     bgOuter: "#050608",
     bgAccent: "#2a2f38",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "none",
     starColor: "#cdd3dc",
     starCount: 40,
     vignette: 0.8,
@@ -113,10 +108,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#0a1a22",
     bgOuter: "#03080b",
     bgAccent: "#123842",
-    showNebula: true,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "nebula",
     starColor: "#d6ecff",
     starCount: 45,
     vignette: 0.82,
@@ -146,10 +138,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#0a2417",
     bgOuter: "#03100a",
     bgAccent: "#124a2a",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "none",
     starColor: "#c8ffd8",
     starCount: 55,
     vignette: 0.82,
@@ -179,10 +168,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#1a0605",
     bgOuter: "#0a0202",
     bgAccent: "#380a06",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "none",
     starColor: "#ffb0a0",
     starCount: 40,
     vignette: 0.85,
@@ -212,10 +198,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#20040a",
     bgOuter: "#0c0104",
     bgAccent: "#48091a",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "none",
     starColor: "#ffb0c2",
     starCount: 55,
     vignette: 0.82,
@@ -245,10 +228,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#181103",
     bgOuter: "#080601",
     bgAccent: "#38280a",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "none",
     starColor: "#ffe6a0",
     starCount: 45,
     vignette: 0.82,
@@ -278,10 +258,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#0a0f1e",
     bgOuter: "#03050b",
     bgAccent: "#141d38",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "none",
     starColor: "#dceaff",
     starCount: 50,
     vignette: 0.84,
@@ -311,10 +288,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#0c1418",
     bgOuter: "#04070a",
     bgAccent: "#1c3038",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "none",
     starColor: "#eaffff",
     starCount: 70,
     vignette: 0.8,
@@ -344,10 +318,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#041610",
     bgOuter: "#020a08",
     bgAccent: "#0e3a4a",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: true,
-    showAmethyst: false,
+    background: "ammolite",
     starColor: "#c8ffe0",
     starCount: 60,
     vignette: 0.82,
@@ -377,10 +348,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#04140a",
     bgOuter: "#020805",
     bgAccent: "#3a0806",
-    showNebula: false,
-    showBloodstone: true,
-    showAmmolite: false,
-    showAmethyst: false,
+    background: "bloodstone",
     starColor: "#9dff8a",
     starCount: 55,
     vignette: 0.84,
@@ -410,10 +378,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#2a1245",
     bgOuter: "#06030e",
     bgAccent: "#5a2a90",
-    showNebula: false,
-    showBloodstone: false,
-    showAmmolite: false,
-    showAmethyst: true,
+    background: "amethyst",
     starColor: "#e6ccff",     // Added missing property
     starCount: 55,            // Added missing property
     vignette: 0.85,           // Added missing property

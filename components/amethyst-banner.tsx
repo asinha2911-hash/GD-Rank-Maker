@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { DEFAULT_CONFIG, type BannerConfig } from "@/lib/banner-config"
+import { BACKGROUNDS } from "@/lib/backgrounds"
 
 /**
  * Fully parametric tiered nameplate renderer.
@@ -353,9 +354,7 @@ function Ornaments({ config }: { config: BannerConfig }) {
 }
 
 // 1. PLACE YOUR CONVERTED BASE64 STRING HERE (Replace the short placeholder below)
-import { BLOODSTONE_BG_BASE64 } from '../public/bloodstone';
-import { AMMOLITE_BG_BASE64 } from '../public/ammolite';
-import { AMETHYST_BG_BASE64 } from '../public/amethyst';
+
 export function AmethystBanner({ config: configProp }: { config?: BannerConfig }) {
   // Guard against an undefined/partial config (e.g. during HMR) so the
   // preview never crashes; missing keys fall back to sensible defaults.
@@ -414,7 +413,7 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
       />
 
       {/* Optional AI nebula overlay (Amethyst) */}
-      {config.showNebula && (
+      {config.background === "nebula" && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src="/nebula-bg.png"
@@ -431,59 +430,25 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
           }}
         />
       )}
-
-      {/* Accessing the key dynamically prevents TypeScript from flagging a strict type error */}
-      {(config as any).showBloodstone && (
+      {/* Config-driven image background */}
+      {config.background !== "none" && (
       // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={BLOODSTONE_BG_BASE64}
-        alt=""
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          mixBlendMode: "normal",
-          opacity: 1.0,
-        }}
-      />
-    )}
-    {(config as any).showAmmolite && (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={AMMOLITE_BG_BASE64}
-        alt=""
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          mixBlendMode: "normal",
-          opacity: 1.0,
-        }}
-      />
-    )}
-    {(config as any).showAmethyst && (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={AMETHYST_BG_BASE64}
-        alt=""
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          mixBlendMode: "normal",
-          opacity: 1.0,
-        }}
-      />
-    )}
+        <img
+          src={BACKGROUNDS[config.background].src}
+          alt=""
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            mixBlendMode: "normal",
+            opacity: 1,
+            zIndex: 0,
+          }}
+        />
+      )}
       {/* Vignette to deepen the edges */}
       <div
         style={{
