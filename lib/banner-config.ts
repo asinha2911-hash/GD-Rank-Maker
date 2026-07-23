@@ -108,7 +108,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#0a1a22",
     bgOuter: "#03080b",
     bgAccent: "#123842",
-    background: ""
+    background: "default"
     starColor: "#d6ecff",
     starCount: 45,
     vignette: 0.82,
