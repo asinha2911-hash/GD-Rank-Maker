@@ -360,6 +360,7 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
   // preview never crashes; missing keys fall back to sensible defaults.
   const config: BannerConfig = { ...DEFAULT_CONFIG, ...configProp }
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const shouldAnimateBackground = config.background !== "none"
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -389,7 +390,52 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
   }, [config])
 
   return (
-    <div
+    <>
+      <style jsx>{`
+        @keyframes gemstone-drift {
+          0% {
+            transform: translate3d(-8%, -5%, 0) scale(1.03);
+          }
+          25% {
+            transform: translate3d(4%, -2%, 0) scale(1.06);
+          }
+          50% {
+            transform: translate3d(7%, 4%, 0) scale(1.1);
+          }
+          75% {
+            transform: translate3d(-3%, 5%, 0) scale(1.07);
+          }
+          100% {
+            transform: translate3d(-1%, -1%, 0) scale(1.04);
+          }
+        }
+
+        @keyframes gemstone-shimmer {
+          0% {
+            transform: translate3d(-140%, 0, 0) rotate(8deg);
+            opacity: 0;
+          }
+          35% {
+            opacity: 0.75;
+          }
+          100% {
+            transform: translate3d(140%, 0, 0) rotate(8deg);
+            opacity: 0;
+          }
+        }
+
+        @keyframes gemstone-pulse {
+          0%, 100% {
+            opacity: 0.8;
+            filter: saturate(1.05) brightness(1.02);
+          }
+          50% {
+            opacity: 1;
+            filter: saturate(1.25) brightness(1.12);
+          }
+        }
+      `}</style>
+      <div
       style={{
         position: "relative",
         width: "100%",
@@ -431,23 +477,55 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
         />
       )}
       {/* Config-driven image background */}
-      {config.background !== "none" && (
-      // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={BACKGROUNDS[config.background].src}
-          alt=""
-          aria-hidden="true"
+      {shouldAnimateBackground && (
+        <div
           style={{
             position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            mixBlendMode: "normal",
-            opacity: 1,
+            inset: "-3%",
             zIndex: 0,
+            overflow: "hidden",
+            pointerEvents: "none",
           }}
-        />
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={BACKGROUNDS[config.background].src}
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              mixBlendMode: "normal",
+              opacity: 1,
+              transformOrigin: "center center",
+              animation: config.enableAnimation ? "gemstone-drift 14s ease-in-out infinite alternate, gemstone-pulse 8s ease-in-out infinite" : "none",
+              willChange: "transform, filter, opacity",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 42%, transparent 70%)`,
+              transform: "translate3d(-140%, 0, 0) rotate(8deg)",
+              animation: "gemstone-shimmer 9s linear infinite",
+              mixBlendMode: "screen",
+              opacity: 0.7,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `radial-gradient(circle at 20% 20%, rgba(255,255,255,0.2), transparent 30%), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.12), transparent 25%), radial-gradient(circle at 50% 80%, rgba(255,255,255,0.14), transparent 24%)`,
+              opacity: 0.85,
+              pointerEvents: "none",
+            }}
+          />
+        </div>
       )}
       {/* Vignette to deepen the edges */}
       <div
@@ -524,6 +602,8 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
         aria-label={config.word}
         role="img"
       />
+
     </div>
+    </>
   )
 }

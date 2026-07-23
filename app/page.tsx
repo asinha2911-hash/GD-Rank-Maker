@@ -1,16 +1,30 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AmethystBanner } from "@/components/amethyst-banner"
 import { BannerControls } from "@/components/banner-controls"
-import { DEFAULT_CONFIG, PRESETS, type BannerConfig, type PresetName } from "@/lib/banner-config"
+import { DEFAULT_CONFIG, PRESETS, applyBackgroundTheme, type BannerConfig, type PresetName } from "@/lib/banner-config"
 
 export default function Page() {
   const [config, setConfig] = useState<BannerConfig>(DEFAULT_CONFIG)
   const [activePreset, setActivePreset] = useState<PresetName | null>("Amethyst")
 
+  // Auto-enable animation 5 seconds after page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setConfig((c) => ({ ...c, enableAnimation: true }))
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [])
+
   const patch = (p: Partial<BannerConfig>) => {
-    setConfig((c) => ({ ...c, ...p }))
+    setConfig((c) => {
+      const next = { ...c, ...p }
+      if ("background" in p && p.background !== undefined) {
+        return applyBackgroundTheme({ ...next, background: p.background })
+      }
+      return next
+    })
     // Editing only the word keeps the active tier styling; any other tweak
     // means the look is no longer a pristine preset.
     const onlyWord = Object.keys(p).length === 1 && "word" in p
@@ -23,7 +37,7 @@ export default function Page() {
   }
 
   const reset = () => {
-    setConfig(DEFAULT_CONFIG)
+    setConfig(PRESETS.Amethyst)
     setActivePreset("Amethyst")
   }
 

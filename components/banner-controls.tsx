@@ -81,13 +81,20 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
       role="switch"
       aria-checked={value}
       onClick={() => onChange(!value)}
-      className={`relative h-6 w-11 rounded-full transition-colors ${
-        value ? "bg-primary" : "bg-muted"
+      className={`relative h-6 w-11 rounded-full border transition-all duration-300 ${
+        value ? "border-primary/70 bg-primary/90" : "border-border bg-muted"
       }`}
+      style={
+        value
+          ? {
+              boxShadow: "0 0 0 1px rgba(168,85,247,0.25), 0 0 12px rgba(168,85,247,0.55)",
+            }
+          : undefined
+      }
     >
       <span
         className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-background transition-transform ${
-          value ? "translate-x-5" : "translate-x-0"
+          value ? "translate-x-5 bg-white/95" : "translate-x-0 bg-background"
         }`}
       />
     </button>
@@ -284,6 +291,9 @@ export function BannerControls({ config, activePreset, onSelectPreset, onChange,
             <option value="ammolite">Ammolite</option>
             <option value="amethyst">Amethyst</option>
           </select>
+        </Row>
+        <Row label="Animate background">
+          <Toggle value={config.enableAnimation} onChange={(v) => onChange({ enableAnimation: v })} />
         </Row>
         <Row label="Vignette">
           <Slider value={config.vignette} min={0} max={1} step={0.05} onChange={(v) => onChange({ vignette: v })} />

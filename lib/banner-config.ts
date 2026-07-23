@@ -1,6 +1,78 @@
 export type OrnamentType = "none" | "frame" | "ingots" | "moons" | "orbs"
 import type { BackgroundType } from "./backgrounds"
 import { BLOODSTONE_BG_BASE64 } from '../public/bloodstone';
+
+const BACKGROUND_THEME_PALETTES: Record<Exclude<BackgroundType, "none">, Partial<BannerConfig>> = {
+  amethyst: {
+    chromeTop: "#ffffff",
+    chromeUpperMid: "#e6dcf5",
+    chromeHorizon: "#6f5d94",
+    chromeLowerMid: "#b6a6d4",
+    chromeBottom: "#ffffff",
+    glowColor: "#a555f0",
+    sparkleColor: "#e6ccff",
+    starColor: "#e6ccff",
+    bgInner: "#2a1245",
+    bgOuter: "#06030e",
+    bgAccent: "#5a2a90",
+    ornamentColor: "#c9a8ff",
+  },
+  bloodstone: {
+    chromeTop: "#d6ffb0",
+    chromeUpperMid: "#4fd83a",
+    chromeHorizon: "#124f10",
+    chromeLowerMid: "#8fe85a",
+    chromeBottom: "#d6ffb0",
+    glowColor: "#30d020",
+    sparkleColor: "#ff4030",
+    starColor: "#9dff8a",
+    bgInner: "#04140a",
+    bgOuter: "#020805",
+    bgAccent: "#3a0806",
+    ornamentColor: "#ff4030",
+  },
+  ammolite: {
+    chromeTop: "#b6ff9c",
+    chromeUpperMid: "#ffcf5c",
+    chromeHorizon: "#6a3aa8",
+    chromeLowerMid: "#4fd0ff",
+    chromeBottom: "#ff8fd0",
+    glowColor: "#59e0a0",
+    sparkleColor: "#ffe08a",
+    starColor: "#c8ffe0",
+    bgInner: "#041610",
+    bgOuter: "#020a08",
+    bgAccent: "#0e3a4a",
+    ornamentColor: "#59e0a0",
+  },
+  nebula: {
+    chromeTop: "#ffffff",
+    chromeUpperMid: "#ffd9ec",
+    chromeHorizon: "#9f8fd6",
+    chromeLowerMid: "#a8e0f2",
+    chromeBottom: "#ffffff",
+    glowColor: "#c9a8ff",
+    sparkleColor: "#e6d6ff",
+    starColor: "#d6ecff",
+    bgInner: "#0a1a22",
+    bgOuter: "#03080b",
+    bgAccent: "#123842",
+    ornamentColor: "#a8e0f2",
+  },
+}
+
+export function applyBackgroundTheme(config: BannerConfig): BannerConfig {
+  if (config.background === "none") return config
+
+  const theme = BACKGROUND_THEME_PALETTES[config.background]
+  if (!theme) return config
+
+  return {
+    ...config,
+    ...theme,
+  }
+}
+
 export type BannerConfig = {
   word: string
   tagline: string
@@ -47,6 +119,9 @@ export type BannerConfig = {
   // Side ornaments
   ornament: OrnamentType
   ornamentColor: string
+
+  // Animation
+  enableAnimation: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -84,6 +159,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.8,
     ornament: "frame",
     ornamentColor: "#b8bec8",
+    enableAnimation: false,
   },
   Opal: {
     word: "OPAL",
@@ -114,6 +190,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#a8e0f2",
+    enableAnimation: false,
   },
   Tourmaline: {
     word: "TOURMALINE",
@@ -144,6 +221,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#ff6fbf",
+    enableAnimation: false,
   },
   Almandine: {
     word: "ALMANDINE",
@@ -174,6 +252,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.85,
     ornament: "none",
     ornamentColor: "#c8362a",
+    enableAnimation: false,
   },
   Ruby: {
     word: "RUBY",
@@ -204,6 +283,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "none",
     ornamentColor: "#ff2d6a",
+    enableAnimation: false,
   },
   Gold: {
     word: "GOLD",
@@ -234,6 +314,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "ingots",
     ornamentColor: "#ffcf4d",
+    enableAnimation: false,
   },
   Moonstone: {
     word: "MOONSTONE",
@@ -264,6 +345,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.84,
     ornament: "moons",
     ornamentColor: "#cde0ff",
+    enableAnimation: false,
   },
   Diamond: {
     word: "DIAMOND",
@@ -294,6 +376,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.8,
     ornament: "none",
     ornamentColor: "#d6f2ff",
+    enableAnimation: false,
   },
   Ammolite: {
     word: "AMMOLITE",
@@ -324,6 +407,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.82,
     ornament: "orbs",
     ornamentColor: "#59e0a0",
+    enableAnimation: true,
   },
   Bloodstone: {
     word: "BLOODSTONE",
@@ -354,6 +438,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     vignette: 0.84,
     ornament: "none",
     ornamentColor: "#ff4030",
+    enableAnimation: false,
   },
     Amethyst: {
     word: "AMETHYST",
@@ -381,9 +466,10 @@ export const PRESETS: Record<string, BannerConfig> = {
     background: "amethyst",
     starColor: "#e6ccff",     // Added missing property
     starCount: 55,            // Added missing property
-    vignette: 0.85,           // Added missing property
-    ornament: "none",         // Added missing property
-    ornamentColor: "#c9a8ff", // Added missing property
+    vignette: 0.85,
+    ornament: "none",
+    ornamentColor: "#c9a8ff",
+    enableAnimation: false,
   },
 }
 
