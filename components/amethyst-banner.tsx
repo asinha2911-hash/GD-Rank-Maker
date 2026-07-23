@@ -467,6 +467,23 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
         }}
       />
     )}
+    {(config as any).showAmethyst && (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={AMETHYST_BG_BASE64}
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          mixBlendMode: "normal",
+          opacity: 1.0,
+        }}
+      />
+    )}
       {/* Vignette to deepen the edges */}
       <div
         style={{
