@@ -431,7 +431,7 @@ export function AmethystBanner({ config: configProp }: { config?: BannerConfig }
         />
       )}
       {/* Config-driven image background */}
-      {config.background !== "default" && (
+      {config.background !== "none" && (
       // eslint-disable-next-line @next/next/no-img-element
         <img
           src={BACKGROUNDS[config.background].src}
