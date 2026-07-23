@@ -38,11 +38,8 @@ export type BannerConfig = {
   bgOuter: string
   bgAccent: string
 
- showNebula: boolean
-
-  showBloodstone?: boolean
-  showAmmolite?: boolean
-  showAmethyst?: boolean
+  // Background selection
+  background: BackgroundType
   starColor: string
   starCount: number
   vignette: number
