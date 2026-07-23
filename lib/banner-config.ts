@@ -41,6 +41,7 @@ export type BannerConfig = {
 
   showBloodstone?: boolean
   showAmmolite?: boolean
+  showAmethyst?: boolean
   starColor: string
   starCount: number
   vignette: number
