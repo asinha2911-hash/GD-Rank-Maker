@@ -163,3 +163,25 @@
     @apply bg-background text-foreground;
   }
 }
+/* Universal form control styling */
+input,
+select,
+textarea,
+button {
+  color: var(--foreground);
+  background-color: var(--card);
+  border-color: var(--border);
+}
+
+select option {
+  color: var(--foreground);
+  background-color: var(--card);
+}
+
+/* Prevent browser dark-mode overrides */
+input,
+select,
+textarea,
+button {
+  color-scheme: light;
+}
