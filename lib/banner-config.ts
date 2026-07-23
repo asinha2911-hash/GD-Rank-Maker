@@ -393,7 +393,7 @@ export const PRESETS: Record<string, BannerConfig> = {
     bgInner: "#2a1245",
     bgOuter: "#06030e",
     bgAccent: "#5a2a90",
-    showNebula: true,
+    showAmethyst: true,
     starColor: "#e6ccff",
     starCount: 55,
     vignette: 0.85,
