@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AmethystBanner } from "@/components/amethyst-banner"
+import { AmethystBanner } from "@/components/banner-rendering"
 import { BannerControls } from "@/components/banner-controls"
 import { DEFAULT_CONFIG, PRESETS, applyBackgroundTheme, type BannerConfig, type PresetName } from "@/lib/banner-config"
 
