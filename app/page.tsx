@@ -40,7 +40,8 @@ export default function Page() {
           <p className="max-w-2xl text-pretty leading-relaxed text-muted-foreground">
             A parametric HTML5 canvas chrome-text engine with a full library of gemstone tier
             presets — Silver through Bloodstone. Switch tiers instantly, edit the text, metal,
-            glow, plate, ornaments, and sparkles, and watch it update in real time.
+            glow, plate, ornaments, and sparkles, and watch it update in real time. 
+            - By Ansh P.S. Pls give cherry mod for this (jk idc if you do)
           </p>
         </header>
 
@@ -65,17 +66,17 @@ export default function Page() {
             <ol className="flex list-inside list-decimal flex-col gap-2 text-sm leading-relaxed text-muted-foreground">
               <li>
                 <span className="text-foreground">Presets:</span> each gemstone tier is a full
-                config — chrome colors, glow, plate, stars, sparkles, and side ornaments.
+                config — chrome colors, glow, plate, stars, sparkles, and side ornaments. All editable with the control panel
               </li>
               <li>
                 <span className="text-foreground">Chrome text:</span> a canvas renderer draws
                 the word in passes — neon glow, 3D extrusion, a multi-stop metallic gradient,
-                a clipped specular sweep, and a top rim light.
+                a clipped specular sweep, and a top rim light. I also added AI into the mix so that it helps render and designs a few layers too complex for code alone.
               </li>
               <li>
                 <span className="text-foreground">Plate &amp; ornaments:</span> a config-driven
                 gradient plate with procedural stars, plus SVG side pieces (frame, gold ingots,
-                crescent moons, aurora orbs).
+                crescent moons, aurora orbs). Design any rank or combination of ranks you'd like, all with a few button presses. You're welcome.
               </li>
               <li>
                 Switch a preset to load its look, then change the word to brand any text in that
