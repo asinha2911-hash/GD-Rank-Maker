@@ -210,3 +210,20 @@ button {
 input[type="range"] {
   accent-color: var(--primary);
 }
+@keyframes slowNebulaBreathing {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.05) rotate(2deg); /* Seamlessly scales and slightly tilts */
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-nebula {
+  /* Runs a super slow 20-second loop that moves smoothly forever */
+  animation: slowNebulaBreathing 20s ease-in-out infinite;
+  will-change: transform; /* Boosts mobile and browser rendering performance */
+}

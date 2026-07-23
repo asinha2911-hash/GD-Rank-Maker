@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
+import html2canvas from "html2canvas-pro"
 import { AmethystBanner } from "@/components/banner-rendering"
 import { BannerControls } from "@/components/banner-controls"
 import { DEFAULT_CONFIG, PRESETS, applyBackgroundTheme, type BannerConfig, type PresetName } from "@/lib/banner-config"
@@ -8,6 +9,8 @@ import { DEFAULT_CONFIG, PRESETS, applyBackgroundTheme, type BannerConfig, type 
 export default function Page() {
   const [config, setConfig] = useState<BannerConfig>(DEFAULT_CONFIG)
   const [activePreset, setActivePreset] = useState<PresetName | null>("Amethyst")
+  const [isExporting, setIsExporting] = useState(false)
+  const previewRef = useRef<HTMLDivElement>(null)
 
   // Auto-enable animation 5 seconds after page load
   useEffect(() => {
@@ -41,6 +44,33 @@ export default function Page() {
     setActivePreset("Amethyst")
   }
 
+  const exportRankCard = async () => {
+    if (!previewRef.current) return
+
+    setIsExporting(true)
+    try {
+      const card = previewRef.current
+      const canvas = await html2canvas(card, {
+        backgroundColor: "#050816",
+        scale: 4,
+        useCORS: true,
+        logging: false,
+        width: card.scrollWidth,
+        height: card.scrollHeight,
+      })
+
+      const fileName = `${(config.word || "rank-card").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-") || "rank-card"}.png`
+      const link = document.createElement("a")
+      link.download = fileName
+      link.href = canvas.toDataURL("image/png")
+      link.click()
+    } catch (error) {
+      console.error("Failed to export rank card", error)
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10">
@@ -61,11 +91,29 @@ export default function Page() {
 
         {/* Live preview */}
         <section className="flex flex-col items-center gap-3">
-          <div className="w-full rounded-xl border border-border bg-card/40 p-4 md:p-8">
+          <div
+            ref={previewRef}
+            style={{
+              width: "100%",
+              borderRadius: 20,
+              border: "1px solid rgba(255,255,255,0.14)",
+              background: "linear-gradient(180deg, #050816 0%, #0b1228 100%)",
+              padding: "1rem",
+            }}
+            className="md:p-8"
+          >
             <div className="mx-auto flex justify-center">
               <AmethystBanner config={config} />
             </div>
           </div>
+          <button
+            type="button"
+            onClick={exportRankCard}
+            disabled={isExporting}
+            className="w-full rounded-xl border border-primary/40 bg-gradient-to-r from-primary/20 via-fuchsia-500/20 to-cyan-500/20 px-4 py-3 text-sm font-semibold text-foreground shadow-[0_0_30px_rgba(168,85,247,0.2)] transition-all hover:scale-[1.01] hover:border-primary/70 hover:shadow-[0_0_40px_rgba(168,85,247,0.35)] disabled:cursor-not-allowed disabled:opacity-70 md:w-auto"
+          >
+            {isExporting ? "Exporting 4K PNG…" : "Export Rank Card"}
+          </button>
           <p className="text-xs text-muted-foreground">
             {activePreset ? `Preset: ${activePreset}` : "Custom"} — live preview, updates as you edit
           </p>
