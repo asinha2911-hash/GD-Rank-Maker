@@ -257,26 +257,21 @@ export function BannerControls({ config, activePreset, onSelectPreset, onChange,
         <Row label="Accent tint">
           <ColorField value={config.bgAccent} onChange={(v) => onChange({ bgAccent: v })} />
         </Row>
-        <Row label="Nebula overlay">
-          <Toggle value={config.showNebula} onChange={(v) => onChange({ showNebula: v })} />
-        </Row>
-        <Row label="Bloodstone overlay"> 
-          <Toggle 
-            value={(config as any).showBloodstone} 
-            onChange={(v) => onChange({ showBloodstone: v } as any)} 
-          /> 
-        </Row>
-        <Row label="Ammolite overlay"> 
-          <Toggle 
-            value={(config as any).showAmmolite} 
-            onChange={(v) => onChange({ showAmmolite: v } as any)} 
-          /> 
-        </Row>
-        <Row label="Amethyst overlay"> 
-          <Toggle 
-            value={(config as any).showAmethyst} 
-            onChange={(v) => onChange({ showAmethyst: v } as any)} 
-          /> 
+        <Row label="Background">
+          <select
+            value={config.background}
+            onChange={(e) =>
+              onChange({
+                background: e.target.value,
+              } as any)
+            }
+          >
+            <option value="none">None</option>
+            <option value="nebula">Nebula</option>
+            <option value="bloodstone">Bloodstone</option>
+            <option value="ammolite">Ammolite</option>
+            <option value="amethyst">Amethyst</option>
+          </select>
         </Row>
         <Row label="Vignette">
           <Slider value={config.vignette} min={0} max={1} step={0.05} onChange={(v) => onChange({ vignette: v })} />
